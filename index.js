@@ -10,7 +10,7 @@ const markdownCodes = {};
 
 // handlers
 exports.handlers = {
-  async beforeParse (e) {
+  beforeParse (e) {
     if (/\.vue$/.test(e.filename)) {
       log(`parse file begin: ${e.filename}`);
 
@@ -23,13 +23,19 @@ exports.handlers = {
         filecontent: e.source
       });
 
-      try {
-        const md = await vuedoc.md(options);
-        markdownCodes[e.filename] = md;
-      } catch(e) {
-        log(`parse SFC info error: ${e.filename}`);
-        log(e);
+      const parseMD = async function() {
+        try {
+          const md = await vuedoc.md(options);
+          markdownCodes[e.filename] = md;
+        } catch(e) {
+          log(`parse SFC info error: ${e.filename}`);
+          log(e);
+        }
+
+        return md;
       }
+
+      parseMD();
 
       e.source = code;
     }
