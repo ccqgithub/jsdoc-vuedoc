@@ -10,10 +10,13 @@ try {
   // console.log(e);
 }
 
-function log(message) {
+function log(message, isError) {
   if (!config.log) return;
-  console.log('jsdoc-vuedoc: ');
-  console.log(message);
+
+  const log = isError ? console.error : console.log;
+
+  log('jsdoc-vuedoc: ');
+  log(message);
 }
 
 exports.config = config;

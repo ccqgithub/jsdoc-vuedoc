@@ -2,8 +2,10 @@ const path = require('path');
 const fs = require('fs');
 const vuedoc = require('@vuedoc/md');
 const compiler = require('vue-template-compiler');
+const spawnSync = require('child_process').spawnSync;
 const config = require('./util').config;
 const log = require('./util').log;
+
 
 // cache parsed md
 const markdownCodes = {};
@@ -23,21 +25,34 @@ exports.handlers = {
         filecontent: e.source
       });
 
-      const parseMD = async function() {
-        let md;
+      try {
+        // node parsed-md.js
+        const md = spawnSync('node', [path.resolve(__dirname, './parse-md.js')], {
+          cwd: process.cwd(),
+          env: process.env,
+          input: JSON.stringify(options)
+        });
 
-        try {
-          md = await vuedoc.md(options);
-          markdownCodes[e.filename] = md;
-        } catch(e) {
-          log(`parse SFC info error: ${e.filename}`);
-          log(e);
+        // parse md error
+        if (md.error && md.error.toString().trim())
+          log('parse md error: ' + md.error.toString(), true);
+
+        if (md.error && md.stderr.toString().trim())
+          log('parse md error: ' + md.stderr.toString(), true);
+
+        // extract data
+        const result = md.stdout.toString();
+        const matches = result.match(/JSDOC_VUEDOC_BEGIN([\s\S]*?)JSDOC_VUEDOC_END/);
+
+        // cache md content
+        markdownCodes[e.filename] = '';
+        if (matches) {
+          markdownCodes[e.filename] = matches[1].trim();
         }
-
-        return md;
+      } catch(e) {
+        log(`parse SFC info error: ${e.filename}`);
+        log(e);
       }
-
-      parseMD();
 
       e.source = code;
     }
@@ -49,7 +64,7 @@ exports.handlers = {
       /\.vue$/.test(e.filename)
       && e.comment.indexOf(tag) != -1
     ) {
-      let md = markdownCodes[e.filename] || '';
+      let md = (markdownCodes[e.filename]) || '';
       e.comment = e.comment.replace(tag, md);
     }
   }
@@ -65,7 +80,7 @@ exports.defineTags = function (dictionary) {
       const componentName = doclet.meta.filename.split('.').slice(0, -1).join('.');
 
       doclet.scope = 'vue';
-      doclet.kind = 'module';
+      doclet.kind = 'description';
       doclet.alias = 'vue-' + componentName;
     }
   });
