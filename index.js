@@ -24,8 +24,10 @@ exports.handlers = {
       });
 
       const parseMD = async function() {
+        let md;
+
         try {
-          const md = await vuedoc.md(options);
+          md = await vuedoc.md(options);
           markdownCodes[e.filename] = md;
         } catch(e) {
           log(`parse SFC info error: ${e.filename}`);
