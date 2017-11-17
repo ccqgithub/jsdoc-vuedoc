@@ -1,0 +1,14 @@
+*.log
+*.pid
+*.seed
+
+.DS_Store
+
+.idea
+.tags*
+node_modules
+_book
+
+npm-debug.log*
+#yarn.lock
+package-lock.json
