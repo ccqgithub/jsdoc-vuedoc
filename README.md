@@ -4,8 +4,6 @@
 
 ## Dependencies
 
-> This plugin dependence on [@vuedoc/md](https://github.com/vuedoc/md), if has troubles that can not fixed immediately, you can use [jsdoc-vue-component](https://github.com/ccqgithub/jsdoc-vue-component) as a fallback.
-
 - node@8.x: That support `async/await` features.
 - [@vuedoc/md](https://github.com/vuedoc/md).
 
