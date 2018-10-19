@@ -1,5 +1,5 @@
 {
-  "name": "xh-jsdoc-vuedoc",
+  "name": "jsdoc-vuedoc",
   "version": "1.2.0",
   "description": "A jsdoc3 plugin use `@vuedoc/md`",
   "main": "index.js",
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/ccqgithub/jsdoc-vuedoc#readme",
   "dependencies": {
-    "@xh-vuedoc/md": "^1.4.1",
+    "@vuedoc/md": "^1.4.1",
     "vue-template-compiler": "^2.5.17"
   }
 }
