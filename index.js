@@ -10,19 +10,36 @@ const log = require('./util').log;
 // cache parsed md
 const markdownCodes = {};
 
+//通过vue文件中的src获取js里面内容，从而解决js外链的写法
+const getScriptContentBySrc = (vueSrc, jsSrc) => {
+  var vuefull = vueSrc.split('\\');
+  vuefull.pop();
+  vueSrc = vuefull.join('\\');
+
+  const jsFullSrc = path.join(vueSrc, jsSrc);
+  return fs.readFileSync(jsFullSrc, 'utf-8');
+}
 // handlers
 exports.handlers = {
-  beforeParse (e) {
+  beforeParse(e) {
     if (/\.vue$/.test(e.filename)) {
       log(`parse file begin: ${e.filename}`);
 
       // extract script
+      let code = '',
+        fileContent = '';
       const parsedComponent = compiler.parseComponent(e.source);
-      const code = parsedComponent.script ? parsedComponent.script.content : '';
-
+      // 判断是否为外链的js
+      if (parsedComponent.script.src) {
+        code = getScriptContentBySrc(e.filename, parsedComponent.script.src);
+        fileContent = e.source.replace(/<script(([\s\S])*)?>(([\s\S])*)?<\/script>/g, `<script>${code}<\/script>`);
+      } else {
+        code = parsedComponent.script ? parsedComponent.script.content : '';
+        fileContent = e.source
+      }
       // extract SFC info
       const options = Object.assign({}, config, {
-        filecontent: e.source
+        filecontent: fileContent
       });
 
       try {
@@ -42,6 +59,7 @@ exports.handlers = {
 
         // extract data
         const result = md.stdout.toString();
+        
         const matches = result.match(/JSDOC_VUEDOC_BEGIN([\s\S]*?)JSDOC_VUEDOC_END/);
 
         // cache md content
@@ -49,7 +67,7 @@ exports.handlers = {
         if (matches) {
           markdownCodes[e.filename] = matches[1].trim();
         }
-      } catch(e) {
+      } catch (e) {
         log(`parse SFC info error: ${e.filename}`);
         log(e);
       }
@@ -76,7 +94,7 @@ exports.defineTags = function (dictionary) {
 
   dictionary.defineTag(tag, {
     mustHaveValue: false,
-    onTagged (doclet, tag) {
+    onTagged(doclet, tag) {
       const componentName = doclet.meta.filename.split('.').slice(0, -1).join('.');
 
       doclet.scope = 'vue';
