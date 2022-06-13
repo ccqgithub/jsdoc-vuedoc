@@ -1,6 +1,6 @@
 # jsdoc-vuedoc
 
-> **Tip:** This project is no longer actively maintained, maybe you can try [Vue DocGen Cli](https://github.com/vue-styleguidist/vue-styleguidist/tree/dev/packages/vue-docgen-cli) instead.
+> **Tip:** This project is no longer actively maintained, maybe you can try [Vue DocGen Cli](https://github.com/vue-styleguidist/vue-styleguidist/tree/dev/packages/vue-docgen-cli) or [Vue DocGen Api](https://github.com/vue-styleguidist/vue-styleguidist/tree/dev/packages/vue-docgen-api) instead.
 
 > A jsdoc plugin use [@vuedoc/md](https://github.com/vuedoc/md).
 
